@@ -2,8 +2,8 @@
     <v-container>
         
         
-        <GoogleMap :api-key="mapApiKey" style="width: 500px; height: 500px; border-radius: 15px;"
-            :center="center" :zoom="7">
+        <GoogleMap :api-key="mapApiKey" style="width: 100%; height: 425px; border-radius: 15px;"
+            :center="center" :zoom="7.25">
             <MarkerCluster>
                 <CustomMarker v-for="(location, i) in locations" :key="i" :options="{ position: location }">
                     <div style="text-align: center">
