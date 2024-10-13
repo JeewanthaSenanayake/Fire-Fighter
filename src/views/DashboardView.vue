@@ -2,7 +2,7 @@
     <div>
         <NavigatorComponent pageName="Dashboard" />
         <v-container>
-            <v-card style="background-color: #424242; border-radius: 15px;" class="pa-2">
+            <v-card style="background-color: #424242; border-radius: 15px; height: 100vh;" class="pa-2">
                 <h1 class="text-center mt-3" style="color: white;">Fire Dashboard</h1>
                 <v-row class="mt-4 pb-3">
                     <v-col cols="7" class="ml-4 mr-4">
