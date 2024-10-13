@@ -9,13 +9,17 @@
                         <v-card style="border-radius: 15px; background-color: #616161;">
                             <div v-if="mapShow">
                                 <v-row class="mt-3 pl-7 mb-1">
-                                    <v-chip color="green-accent-4" class="text-white px-2 py-1" density="compact" variant="flat">No any fire alert</v-chip>
+                                    <v-chip v-if="fireStatus == false" color="green-accent-4"
+                                        class="text-white px-2 py-1" density="compact" variant="flat">No any fire
+                                        alert</v-chip>
+                                    <v-chip v-else color="red-accent-4" class="text-white px-2 py-1" density="compact"
+                                        variant="flat">Fire alert</v-chip>
                                 </v-row>
                                 <div>
-                                    <MapComponent />
+                                    <MapComponent @locationsStatus=locationsStatusEmit />
                                 </div>
                             </div>
-                            <div v-else>
+                            <div v-else :class="['blur-transition', { 'is-clear': isClear }]">
                                 <FirefighterData />
                             </div>
                         </v-card>
@@ -35,7 +39,7 @@
                         </v-card>
                     </v-col>
                 </v-row>
-
+                <v-btn @click="mapShow = !mapShow">mapShow</v-btn>
             </v-card>
         </v-container>
     </div>
@@ -55,6 +59,7 @@ export default {
         FirefighterData
     },
     data: () => ({
+        isClear: false,
         historyData: [
             { location: 'Maharagama, Colombo', date: '08.09.2024' },
             { location: 'Kandy', date: '08.09.2024' },
@@ -63,7 +68,41 @@ export default {
             { location: 'Anuradhapura', date: '08.09.2024' },
             { location: 'Jaffna', date: '08.09.2024' },
         ],
-        mapShow: true
+        mapShow: true,
+        fireStatus: false
     }),
+    methods: {
+        locationsStatusEmit(status) {
+            this.fireStatus = status;
+        }
+    },
+    watch: {
+        mapShow: {
+            handler: function (value) {
+                if (value == false) {
+                    setTimeout(() => {
+                        this.isClear = true;
+                    }, 100); // small delay to ensure the transition is visible
+                }else{
+                    this.isClear=false;
+                }
+            },
+            deep: true
+        }
+    }
 }
 </script>
+
+<style scoped>
+.blur-transition {
+    /* Initial state: blurred */
+    filter: blur(10px);
+    transition: filter 2s ease-out;
+    /* Adjust the duration as needed */
+}
+
+.is-clear {
+    /* Final state: no blur */
+    filter: blur(0px);
+}
+</style>
