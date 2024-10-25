@@ -59,14 +59,13 @@
 </template>
 
 <script>
+import { ref, onValue } from "firebase/database";
+import { database } from "../firebase";
 export default {
     name: 'FirefighterData',
     data: () => ({
         values: {
-            midleRight: 75,
-            topRight: 30,
-            bottomLeft: 50,
-            bottomRight: 45
+            
         },
         humanPoints: {
             topLeft: { x: 100, y: 100 },
@@ -88,12 +87,11 @@ export default {
         }
     },
     mounted() {
-        // setInterval(() => {
-        //     this.values.topLeft = Math.floor(Math.random() * 100);
-        //     this.values.topRight = Math.floor(Math.random() * 100);
-        //     this.values.bottomLeft = Math.floor(Math.random() * 100);
-        //     this.values.bottomRight = Math.floor(Math.random() * 100);
-        // }, 2000);
+        const itemsRef = ref(database, "body_data");
+        onValue(itemsRef, (snapshot) => {
+            const data = snapshot.val();
+            this.values = data ;
+        });
     }
 
 }

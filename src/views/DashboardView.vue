@@ -39,7 +39,6 @@
                         </v-card>
                     </v-col>
                 </v-row>
-                <v-btn @click="mapShow = !mapShow">mapShow</v-btn>
             </v-card>
         </v-container>
     </div>
@@ -51,6 +50,8 @@
 import MapComponent from '@/components/MapComponent.vue';
 import NavigatorComponent from '@/components/NavigatorComponent.vue';
 import FirefighterData from '@/components/FirefighterData.vue';
+import { ref, onValue } from "firebase/database";
+import { database } from "../firebase";
 export default {
     name: 'DashboardView',
     components: {
@@ -89,6 +90,13 @@ export default {
             },
             deep: true
         }
+    },
+    mounted(){
+        const itemsRef = ref(database, "is_fighter_ard");
+        onValue(itemsRef, (snapshot) => {
+            const data = snapshot.val();
+            this.mapShow = !data ;
+        });
     }
 }
 </script>

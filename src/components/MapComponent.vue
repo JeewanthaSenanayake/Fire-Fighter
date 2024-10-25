@@ -15,12 +15,12 @@
             </MarkerCluster>
 
         </GoogleMap>
-        <v-btn @click="changeLocations({ lat: 6.9271, lng: 79.8612 }, { lat: 7.0840, lng: 80.0098 })">Test</v-btn>
-        <v-btn @click="resetMap">Reset Map</v-btn>
     </v-container>
 </template>
 <script>
 import { GoogleMap, CustomMarker, MarkerCluster } from 'vue3-google-map'
+import { ref, onValue } from "firebase/database";
+import { database } from "../firebase";
 export default {
     name: 'MapComponent',
     components: {
@@ -37,6 +37,8 @@ export default {
             { lat: 6.9271, lng: 79.8612 }, // 0 index for current location
              // 1 index for destination location
         ],
+        fireStatus: false,
+        fireLocation:{}
     }),
     methods: {
         changeLocations(current, destination) {
@@ -76,20 +78,35 @@ export default {
         }
     },
     mounted() {
+        const itemsRef = ref(database, "is_fire");
+        onValue(itemsRef, (snapshot) => {
+            const data = snapshot.val();
+            this.fireStatus = data;
+            this.$emit('locationsStatus', data);
+        });
 
+        const itemsRef2 = ref(database, "location");
+        onValue(itemsRef2, (snapshot) => {
+            const data = snapshot.val();
+            this.fireLocation = data;
+        });
     },
+
     watch: {
-        locations: {
-            handler: function (val) {
-                if (val.length > 1) {
-                    this.$emit('locationsStatus', true);
+        fireStatus: {
+            handler: function (value) {
+                if (value) {
+                    this.changeLocations(this.locations[0], this.fireLocation);
                 } else {
-                    this.$emit('locationsStatus', false);
+                    this.resetMap();
                 }
             },
             deep: true
         }
     }
+
+
+    
 }
 
 </script>
