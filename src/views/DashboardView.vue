@@ -15,8 +15,9 @@
                                     <v-chip v-else color="red-accent-4" class="text-white px-2 py-1" density="compact"
                                         variant="flat">Fire alert</v-chip>
                                 </v-row>
+
                                 <div>
-                                    <MapComponent @locationsStatus=locationsStatusEmit />
+                                    <MapComponent :center="center" :mapZoom="mapZoom" :locations="locations" />
                                 </div>
                             </div>
                             <div v-else :class="['blur-transition', { 'is-clear': isClear }]">
@@ -31,8 +32,8 @@
                                 Fire History
                                 <router-link to="/fire-history">View All</router-link>
                             </v-row>
-                            <v-card-text v-for="(fire_history, i) in historyData" :key="i">
-                                <h5 style="color:#E0E0E0;">{{ fire_history.location }}</h5>
+                            <v-card-text v-for="(fire_history, i) in historyDataTable.slice(0, 5)" :key="i">
+                                <h5 style="color:#E0E0E0;">{{ fire_history.address }}</h5>
                                 <p style="color:#BDBDBD">{{ fire_history.date }}</p>
                                 <hr>
                             </v-card-text>
@@ -51,7 +52,9 @@ import MapComponent from '@/components/MapComponent.vue';
 import NavigatorComponent from '@/components/NavigatorComponent.vue';
 import FirefighterData from '@/components/FirefighterData.vue';
 import { ref, onValue } from "firebase/database";
-import { database } from "../firebase";
+import { database, firestoreDb } from "../firebase";
+import { collection, addDoc, getDocs } from "firebase/firestore";
+import axios from "axios";
 export default {
     name: 'DashboardView',
     components: {
@@ -61,42 +64,150 @@ export default {
     },
     data: () => ({
         isClear: false,
-        historyData: [
-            { location: 'Maharagama, Colombo', date: '08.09.2024' },
-            { location: 'Kandy', date: '08.09.2024' },
-            { location: 'Galle', date: '08.09.2024' },
-            { location: 'Kurunegala', date: '08.09.2024' },
-            { location: 'Anuradhapura', date: '08.09.2024' },
-            { location: 'Jaffna', date: '08.09.2024' },
+        historyDataTable: [
         ],
         mapShow: true,
-        fireStatus: false
+        fireStatus: false,
+
+        fireLocation: {},
+        address: {},
+        historyData: {
+            startTime: null,
+            endTime: null,
+            date: null,
+            address: null,
+        },
+
+        center: { lat: 7.6697, lng: 80.6459 },
+        mapZoom: 7.25,
+        locations: [
+            { lat: 6.9271, lng: 79.8612 }, // 0 index for current location
+            // 1 index for destination location
+        ],
     }),
     methods: {
-        locationsStatusEmit(status) {
-            this.fireStatus = status;
+
+        changeLocations(current, destination) {
+            this.locations[0] = { lat: current.lat, lng: current.lng };
+            this.locations[1] = { lat: destination.lat, lng: destination.lng };
+            this.center = { lat: (current.lat + destination.lat) / 2, lng: (current.lng + destination.lng) / 2 };
+            this.mapZoom = this.CalculateZoom(current.lat, current.lng, destination.lat, destination.lng);
+        },
+        resetMap() {
+            this.center = { lat: 7.6697, lng: 80.6459 };
+            this.locations = [{ lat: 6.9271, lng: 79.8612 }];
+            this.mapZoom = 7.25;
+        },
+        CalculateZoom(lat1, lng1, lat2, lng2) {
+            const R = 6371 // radius of earth in km
+
+            const toRadians = (degrees) => degrees * (Math.PI / 180);
+            // Differences in latitude and longitude
+            const dLat = toRadians(lat2 - lat1);
+            const dLon = toRadians(lng2 - lng1);
+
+            // Convert latitudes to radians
+            const radLat1 = toRadians(lat1);
+            const radLat2 = toRadians(lat2);
+
+            // Haversine formula
+            const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(radLat1) * Math.cos(radLat2) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+            // Distance in kilometers
+            const distance = R * c;
+            const z = (Math.log(40075 / distance)) / (Math.log(2))
+            return z;
+        },
+        async getAddress(lat, lon) {
+            await axios.get(`https://api.geoapify.com/v1/geocode/reverse?lat=${lat}&lon=${lon}&apiKey=8f85d77341f74d6295f7acf31aabbeec`).then((response) => {
+                // console.log(response.data);
+                this.address = {
+                    "city": response.data.features[0].properties.city,
+                    "state": response.data.features[0].properties.state,
+                    "country": response.data.features[0].properties.country
+                };
+            })
+                .catch((error) => {
+                    console.log(error);
+                });
+        },
+        startTimeFun() {
+            const now = new Date();
+            this.historyData.date = now.toISOString().split('T')[0];
+            this.historyData.startTime = now.toTimeString().split(' ')[0];
+        },
+        endTimeFun() {
+            const now = new Date();
+            this.historyData.endTime = now.toTimeString().split(' ')[0];
+        },
+        async addFirestoreItem(newItem) {
+
+            const colRef = collection(firestoreDb, "fire_history");
+            await addDoc(colRef, newItem);
+        },
+
+        async fetchFirestoreItems() {
+            const colRef = collection(firestoreDb, "fire_history");
+            const snapshot = await getDocs(colRef);
+            this.historyDataTable = snapshot.docs.map(doc => doc.data());
         }
+    },
+
+    async created(){
+        await this.fetchFirestoreItems();
+    },
+
+    mounted() {
+        const itemsRef = ref(database, "is_fighter_ard");
+        onValue(itemsRef, (snapshot) => {
+            const data = snapshot.val();
+            this.mapShow = !data;
+        });
+        const itemsRef1 = ref(database, "is_fire");
+        onValue(itemsRef1, (snapshot) => {
+            const data = snapshot.val();
+            this.fireStatus = data;
+        });
+
+        const itemsRef2 = ref(database, "location");
+        onValue(itemsRef2, (snapshot) => {
+            const data = snapshot.val();
+            this.fireLocation = data;
+        });
     },
     watch: {
         mapShow: {
-            handler: function (value) {
+            handler: async function (value) {
                 if (value == false) {
                     setTimeout(() => {
                         this.isClear = true;
                     }, 100); // small delay to ensure the transition is visible
-                }else{
-                    this.isClear=false;
+                } else {
+                    this.isClear = false;
+                    await this.fetchFirestoreItems();
+                }
+            },
+            deep: true
+        },
+        fireStatus: {
+            handler: async function (value) {
+                if (value) {
+                    this.changeLocations(this.locations[0], this.fireLocation);
+                    this.startTimeFun();
+                    await this.getAddress(this.fireLocation.lat, this.fireLocation.lng);
+                } else {
+                    this.resetMap();
+                    this.endTimeFun();
+                    this.historyData.address = `${this.address.city}, ${this.address.state}, ${this.address.country}`
+                    await this.addFirestoreItem(this.historyData);
                 }
             },
             deep: true
         }
-    },
-    mounted(){
-        const itemsRef = ref(database, "is_fighter_ard");
-        onValue(itemsRef, (snapshot) => {
-            const data = snapshot.val();
-            this.mapShow = !data ;
-        });
     }
 }
 </script>

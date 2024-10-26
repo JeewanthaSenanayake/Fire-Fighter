@@ -6,7 +6,7 @@
                 <h1 class="text-center my-3" style="color: white;">Fire Dashboard</h1>
 
                 <v-card class="ma-3 pa-3" style="border-radius: 15px; background-color: #616161;">
-                <HistryTable :headers="headers" :tableData="tableData" />
+                    <HistryTable :headers="headers" :tableData="tableData" />
                 </v-card>
             </v-card>
         </v-container>
@@ -16,6 +16,8 @@
 <script>
 import NavigatorComponent from '@/components/NavigatorComponent.vue';
 import HistryTable from '@/components/HistryTable.vue';
+import { firestoreDb } from "../firebase";
+import { collection, getDocs } from "firebase/firestore";
 export default {
     name: 'FireHistoryView',
 
@@ -30,69 +32,28 @@ export default {
                 title: 'Location',
                 align: 'start',
                 sortable: false,
-                key: 'location',
+                key: 'address',
             },
             { title: 'Date', key: 'date', align: 'end' },
-            { title: 'Time', key: 'time', align: 'end' },
+            { title: 'Time', key: 'startTime', align: 'end' },
             { title: 'Duration', key: 'duration', align: 'end' },
         ],
 
         tableData: [
-            {
-                location: 'Colombo',
-                date: '2021-09-01',
-                time: '10:00',
-                duration: '1 hour',
-            },
-            {
-                location: 'Kandy',
-                date: '2021-09-02',
-                time: '11:00',
-                duration: '2 hour',
-            },
-            {
-                location: 'Galle',
-                date: '2021-09-03',
-                time: '12:00',
-                duration: '3 hour',
-            },
-            {
-                location: 'Colombo',
-                date: '2021-09-01',
-                time: '10:00',
-                duration: '1 hour',
-            },
-            {
-                location: 'Kandy',
-                date: '2021-09-02',
-                time: '11:00',
-                duration: '2 hour',
-            },
-            {
-                location: 'Galle',
-                date: '2021-09-03',
-                time: '12:00',
-                duration: '3 hour',
-            },
-            {
-                location: 'Colombo',
-                date: '2021-09-01',
-                time: '10:00',
-                duration: '1 hour',
-            },
-            {
-                location: 'Kandy',
-                date: '2021-09-02',
-                time: '11:00',
-                duration: '2 hour',
-            },
-            {
-                location: 'Galle',
-                date: '2021-09-03',
-                time: '12:00',
-                duration: '3 hour',
-            },
+
         ]
     }),
+
+    methods: {
+        async fetchFirestoreItems() {
+            const colRef = collection(firestoreDb, "fire_history");
+            const snapshot = await getDocs(colRef);
+            this.tableData = snapshot.docs.map(doc => doc.data());
+        },
+        
+    },
+    async mounted() {
+        await this.fetchFirestoreItems();
+    }
 }
 </script>
