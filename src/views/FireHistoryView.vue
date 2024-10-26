@@ -1,11 +1,16 @@
 <template>
     <div>
         <NavigatorComponent :pageName="`Fire History`" />
-        <v-container>
-            <v-card style="background-color: #424242; border-radius: 15px; height: 100vh;" class="pa-2">
+        <v-container class="svg-background">
+            <svg class="background-svg" viewBox="0 0 500 500">
+                <circle cx="100" cy="100" r="80" fill="rgba(255, 69, 0)" />
+                <circle cx="400" cy="150" r="100" fill="rgba(255, 255, 0)" />
+                <circle cx="250" cy="400" r="150" fill="rgba(255, 165, 0)" />
+            </svg>
+            <v-card style="background-color: rgba(66, 66, 66, 0.7); border-radius: 15px; height: 100vh;" class="pa-2">
                 <h1 class="text-center my-3" style="color: white;">Fire Dashboard</h1>
 
-                <v-card class="ma-3 pa-3" style="border-radius: 15px; background-color: #616161;">
+                <v-card class="ma-3 pa-3" style="border-radius: 15px; background-color: rgba(97, 97, 97, 0.7);">
                     <HistryTable :headers="headers" :tableData="tableData" />
                 </v-card>
             </v-card>
@@ -57,3 +62,26 @@ export default {
     }
 }
 </script>
+
+<style scoped>
+
+
+.svg-background {
+    position: relative;
+    /* Establish positioning context */
+    padding: 20px;
+    /* Space for content */
+    color: black;
+    /* Text color */
+}
+
+.background-svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    /* Make sure SVG is behind content */
+}
+</style>

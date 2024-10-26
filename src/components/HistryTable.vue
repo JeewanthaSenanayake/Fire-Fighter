@@ -1,7 +1,7 @@
 <template>
     <div>
         <v-data-table  :items-per-page="7" :headers="headers" :items="tableData"
-        class="elevation-1">
+        class="elevation-1 transparent-table ">
         <template v-slot:[`item.duration`]="{ item }">
         {{ getTimeDifference(item.startTime, item.endTime) }}
       </template>
@@ -56,3 +56,21 @@ export default {
     }
 }
 </script>
+
+<style scoped>
+.transparent-table {
+  background-color: rgba(255, 255, 255, 0.5); /* Set to your desired transparency */
+}
+
+.transparent-table .v-data-table-header {
+  background-color: rgba(255, 255, 255, 0.5); /* Adjust header transparency */
+}
+
+.transparent-table .v-data-table__wrapper {
+  background-color: transparent; /* Ensure the wrapper is transparent */
+}
+
+.transparent-table .v-data-table__pagination {
+  background-color: transparent; /* Make pagination transparent */
+}
+</style>

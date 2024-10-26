@@ -1,12 +1,17 @@
 <template>
     <div>
         <NavigatorComponent pageName="Dashboard" />
-        <v-container>
-            <v-card style="background-color: #424242; border-radius: 15px; height: 100vh;" class="pa-2">
+        <v-container class="svg-background">
+            <svg class="background-svg" viewBox="0 0 500 500">
+                <circle cx="100" cy="100" r="80" fill="rgba(255, 69, 0)" />
+                <circle cx="400" cy="150" r="100" fill="rgba(255, 255, 0)" />
+                <circle cx="250" cy="400" r="150" fill="rgba(255, 165, 0)" />
+            </svg>
+            <v-card style="background-color: rgba(66, 66, 66, 0.7); border-radius: 15px; height: 100vh;" class="pa-2">
                 <h1 class="text-center mt-3" style="color: white;">Fire Dashboard</h1>
                 <v-row class="mt-4 pb-3">
                     <v-col cols="7" class="ml-4 mr-4">
-                        <v-card style="border-radius: 15px; background-color: #616161;">
+                        <v-card style="border-radius: 15px; background-color:rgba(97, 97, 97, 0.7);">
                             <div v-if="mapShow">
                                 <v-row class="mt-3 pl-7 mb-1">
                                     <v-chip v-if="fireStatus == false" color="green-accent-4"
@@ -26,7 +31,7 @@
                         </v-card>
                     </v-col>
                     <v-col cols="4" class="ml-4">
-                        <v-card style="border-radius: 15px; background-color: #616161;">
+                        <v-card style="border-radius: 15px; background-color: rgba(97, 97, 97, 0.7);">
                             <v-row style="color: white;"
                                 class="mt-3 mr-4 ml-4 mb-1 d-flex justify-space-between align-center">
                                 Fire History
@@ -157,7 +162,7 @@ export default {
         }
     },
 
-    async created(){
+    async created() {
         await this.fetchFirestoreItems();
     },
 
@@ -223,5 +228,24 @@ export default {
 .is-clear {
     /* Final state: no blur */
     filter: blur(0px);
+}
+
+.svg-background {
+    position: relative;
+    /* Establish positioning context */
+    padding: 20px;
+    /* Space for content */
+    color: black;
+    /* Text color */
+}
+
+.background-svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    /* Make sure SVG is behind content */
 }
 </style>
