@@ -10,9 +10,9 @@
                         <stop offset="90%" style="stop-color: #007BFF; stop-opacity: 1" /> <!-- Blue -->
                     </linearGradient>
                 </defs>
-                <circle cx="100" cy="10" r="100" fill="url(#gradient1)" />
-                <circle cx="575" cy="55" r="150" fill="url(#gradient1)" />
-                <circle cx="275" cy="400" r="150" fill="url(#gradient1)" />
+                <circle cx="100" cy="10" r="100" fill="url(#gradient1)"  />
+                <circle cx="575" cy="55" r="150" fill="url(#gradient1)"  />
+                <circle cx="275" cy="400" r="150" fill="url(#gradient1)"  />
             </svg>
             <v-card style="background-color: rgba(66, 66, 66, 0.7); border-radius: 15px; height: 100vh;" class="pa-2">
                 <h1 class="text-center mt-3" style="color: white;">Fire Dashboard</h1>
@@ -44,7 +44,7 @@
                                 Fire History
                                 <router-link to="/fire-history">View All</router-link>
                             </v-row>
-                            <v-card-text v-for="(fire_history, i) in historyDataTable.slice(0, 5)" :key="i">
+                            <v-card-text v-for="(fire_history, i) in historyDataTable.slice(0, 6)" :key="i">
                                 <h5 style="color:#E0E0E0;">{{ fire_history.address }}</h5>
                                 <p style="color:#BDBDBD">{{ fire_history.date }}</p>
                                 <hr>

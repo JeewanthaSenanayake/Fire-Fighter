@@ -1,58 +1,59 @@
 <template>
     <v-container>
         <v-row justify="center">
-            <v-col cols="12" md="6" class="position-relative">
-
+            <v-col cols="5" md="5" class="position-relative">
                 <v-img src="@/assets/Firefighter1.png" class="firefighter-image" />
+            </v-col>
+            <v-col cols="7" md="7">
+                <v-col class="align-center justify-center">
 
-                <!-- SVG for Arrows -->
-                <svg class="arrows" width="100%" height="100%" style="position:absolute; top:0; left:0;">
-                    <!-- Top right arrow -->
-                    <line x1="75%" y1="7%" x2="60%" y2="15%" stroke="white" stroke-width="2"
-                        marker-end="url(#arrowhead)" />
-                    <line x1="175%" y1="7%" x2="75%" y2="7%" stroke="white" stroke-width="2" />
+                    <v-col cols="12" md="12">
+                        <v-card style="background-color:rgba(97, 97, 97, 0.5);">
 
-                    <!-- Midle right arrow -->
-                    <line x1="85%" y1="48%" x2="65%" y2="38%" stroke="white" stroke-width="2"
-                        marker-end="url(#arrowhead)" />
-                    <line x1="175%" y1="48%" x2="85%" y2="48%" stroke="white" stroke-width="2" />
+                            <v-card-text>
+                                <v-row>
+                                    <v-col cols="6">
+                                        <v-img height="70px" :src="heartReate(values.heart_rate)" />
+                                    </v-col>
+                                    <v-col cols="6">
+                                        <h1>{{ values.heart_rate }} bpm</h1>
+                                    </v-col>
+                                </v-row>
+                            </v-card-text>
+                        </v-card>
+                    </v-col>
+                    <v-col cols="12" md="12">
+                        <v-card style="background-color:rgba(97, 97, 97, 0.5);">
 
-                    <!-- Bottum right arrow -->
-                    <line x1="85%" y1="90%" x2="65%" y2="82%" stroke="white" stroke-width="2"
-                        marker-end="url(#arrowhead)" />
-                    <line x1="175%" y1="90%" x2="85%" y2="90%" stroke="white" stroke-width="2" />
+                            <v-card-text>
+                                <v-row>
+                                    <v-col cols="6">
+                                        <v-img height="70px" :src="gasValColor(values.air_val)" />
+                                    </v-col>
+                                    <v-col cols="6">
+                                        <h1>{{values.air_val}} ppb</h1>
+                                    </v-col>
+                                </v-row>
+                            </v-card-text>
+                        </v-card>
+                    </v-col>
+                    <v-col cols="12" md="12">
+                        <v-card style="background-color:rgba(97, 97, 97, 0.5);">
 
-                    <!-- Midle Left arrow -->
-                    <line x1="10%" y1="50%" x2="30%" y2="40%" stroke="white" stroke-width="2"
-                        marker-end="url(#arrowhead)" />
-                    <line x1="10%" y1="50%" x2="0%" y2="50%" stroke="white" stroke-width="2" />
-                    
-                    
-                    <!-- Arrowhead marker -->
-                    <defs>
-                        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
-                            <polygon points="0 0, 10 3.5, 0 7" fill="white" />
-                        </marker>
-                    </defs>
-                </svg>
-
-
-                <div class="value-box" style="left:100%; top:4%">
-                    <v-chip color="green-accent-4" class="text-white" density="compact" variant="flat">{{
-                        values.topRight }}</v-chip>
-                </div>
-                <div class="value-box" style="left:100%; top:45%">
-                    <v-chip color="red-accent-4" class="text-white" density="compact" variant="flat">{{
-                        values.midleRight }}</v-chip>
-                </div>
-                <div class="value-box" style="left:100%; top:87%">
-                    <v-chip color="green-accent-4" class="text-white" density="compact" variant="flat">{{
-                        values.bottomRight }}</v-chip>
-                </div>
-                <div class="value-box" style="left:-14%; top:47%">
-                    <v-chip color="green-accent-4" class="text-white" density="compact" variant="flat">{{
-                        values.bottomLeft }}</v-chip>
-                </div>
+                            <v-card-text>
+                                <v-row>
+                                    <v-col cols="6">
+                                        <v-img height="70px" :src="is_man_active(values.is_active)" />
+                                    </v-col>
+                                    <v-col cols="6">
+                                        <h1 v-if="values.is_active">Active</h1>
+                                        <h1 v-else>Not Active</h1>
+                                    </v-col>
+                                </v-row>
+                            </v-card-text>
+                        </v-card>
+                    </v-col>
+                </v-col>
             </v-col>
         </v-row>
     </v-container>
@@ -65,14 +66,8 @@ export default {
     name: 'FirefighterData',
     data: () => ({
         values: {
-            
         },
-        humanPoints: {
-            topLeft: { x: 100, y: 100 },
-            topRight: { x: 250, y: 100 },
-            bottomLeft: { x: 100, y: 400 },
-            bottomRight: { x: 250, y: 400 }
-        }
+        
     }),
     methods: {
         getPosition(position) {
@@ -84,13 +79,38 @@ export default {
                 'bottom-right': { bottom: '20px', right: '20px' }
             };
             return { position: 'absolute', ...positions[position] };
+        },
+        heartReate(val){
+            if(val>=60 && val<=100){
+                return require('@/assets/fireDataImg/heart_green.png')
+            }else if(val>100 && val<=120 || val>=50 && val<60){
+                return require('@/assets/fireDataImg/heart_yellow.png')
+            }else if(val>120 || val<50){
+                return require('@/assets/fireDataImg/heart_red.png')
+            }
+        },
+        is_man_active(val){
+            if(val){
+                return require('@/assets/fireDataImg/man_active.png')
+            }else{
+                return require('@/assets/fireDataImg/man_no_active.png')
+            }
+        },
+        gasValColor(val){
+            if(val>=0 && val<=100){
+                return require('@/assets/fireDataImg/gas_green.png')
+            }else if(val>100 && val<=200 || val>=0 && val<100){
+                return require('@/assets/fireDataImg/gas_yellow.png')
+            }else if(val>200 || val<0){
+                return require('@/assets/fireDataImg/gas_red.png')
+            }
         }
     },
     mounted() {
         const itemsRef = ref(database, "body_data");
         onValue(itemsRef, (snapshot) => {
             const data = snapshot.val();
-            this.values = data ;
+            this.values = data;
         });
     }
 
