@@ -39,7 +39,7 @@ export default {
         items: [
             { title: 'Dashboard', icon: 'mdi-view-dashboard', to: '/' },
             { title: 'Fire History', icon: 'mdi-history', to: '/fire-history' },
-            { title: 'Help', icon: 'mdi-help', to: '/help' },
+            
         ],
     }),
 }

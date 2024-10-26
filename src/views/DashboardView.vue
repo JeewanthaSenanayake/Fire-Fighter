@@ -93,7 +93,7 @@ export default {
         center: { lat: 7.6697, lng: 80.6459 },
         mapZoom: 7.25,
         locations: [
-            { lat: 6.9271, lng: 79.8612 }, // 0 index for current location
+            { lat: 6.8511, lng:79.9212 }, // 0 index for current location
             // 1 index for destination location
         ],
     }),
