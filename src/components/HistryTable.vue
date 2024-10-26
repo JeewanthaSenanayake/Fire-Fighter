@@ -1,11 +1,11 @@
 <template>
     <div>
-        <v-data-table  :items-per-page="7" :headers="headers" :items="tableData"
-        class="elevation-1 transparent-table ">
-        <template v-slot:[`item.duration`]="{ item }">
-        {{ getTimeDifference(item.startTime, item.endTime) }}
-      </template>
-    </v-data-table >
+        <v-progress-linear v-if="tableData.length==0" color="yellow-darken-2" indeterminate></v-progress-linear>
+        <v-data-table v-else :items-per-page="7" :headers="headers" :items="tableData" class="elevation-1 transparent-table ">
+            <template v-slot:[`item.duration`]="{ item }">
+                {{ getTimeDifference(item.startTime, item.endTime) }}
+            </template>
+        </v-data-table>
     </div>
 </template>
 
@@ -26,7 +26,7 @@ export default {
         itemsPerPage: 5,
     }),
 
-    methods:{
+    methods: {
         getTimeDifference(startTime, endTime) {
             // Parse the start and end time strings into hours, minutes, and seconds
             const [startHours, startMinutes, startSeconds] = startTime.split(':').map(Number);
@@ -59,18 +59,22 @@ export default {
 
 <style scoped>
 .transparent-table {
-  background-color: rgba(255, 255, 255, 0.5); /* Set to your desired transparency */
+    background-color: rgba(255, 255, 255, 0.5);
+    /* Set to your desired transparency */
 }
 
 .transparent-table .v-data-table-header {
-  background-color: rgba(255, 255, 255, 0.5); /* Adjust header transparency */
+    background-color: rgba(255, 255, 255, 0.5);
+    /* Adjust header transparency */
 }
 
 .transparent-table .v-data-table__wrapper {
-  background-color: transparent; /* Ensure the wrapper is transparent */
+    background-color: transparent;
+    /* Ensure the wrapper is transparent */
 }
 
 .transparent-table .v-data-table__pagination {
-  background-color: transparent; /* Make pagination transparent */
+    background-color: transparent;
+    /* Make pagination transparent */
 }
 </style>
