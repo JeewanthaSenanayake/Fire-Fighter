@@ -31,7 +31,8 @@
                                         <v-img height="70px" :src="gasValColor(values.air_val)" />
                                     </v-col>
                                     <v-col cols="6">
-                                        <h1>{{values.air_val}} ppb</h1>
+                                        <h1 v-if="values.air_val">Normal</h1>
+                                        <h1 v-else>Denger</h1>
                                     </v-col>
                                 </v-row>
                             </v-card-text>
@@ -97,11 +98,9 @@ export default {
             }
         },
         gasValColor(val){
-            if(val>=0 && val<=100){
+            if(val){
                 return require('@/assets/fireDataImg/gas_green.png')
-            }else if(val>100 && val<=200 || val>=0 && val<100){
-                return require('@/assets/fireDataImg/gas_yellow.png')
-            }else if(val>200 || val<0){
+            }else {
                 return require('@/assets/fireDataImg/gas_red.png')
             }
         }
